@@ -1,4 +1,10 @@
-version: '3.8'
+name: not_posixtive
+description: Auto exploit script
+connection_info: nc 154.57.164.67 30748
+
+steps:
+  - name: run exploit
+    command: python3 speedrun.pyversion: '3.8'
 
 services:
   not_posixtive:
