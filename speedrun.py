@@ -21,7 +21,8 @@ def main():
 
     io.sendlineafter(b"> ", b"5")
 
-    print(io.recvall(timeout=5).decode(errors="ignore"))
+    data = io.recvall(timeout=10)
+    print(data.decode(errors="ignore"))
 
 if __name__ == "__main__":
     main()
