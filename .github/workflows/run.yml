@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  not_posixtive:
+    build: .
+    container_name: not_posixtive
+    ports:
+      - "1337:1337"
+    restart: unless-stopped
