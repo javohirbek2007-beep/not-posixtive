@@ -1,6 +1,25 @@
-name: not_posixtive
-description: HTB misc challenge exploit
-host: 154.57.164.67
-port: 30748
-script: speedrun.py
-language: python3
+name: Run HTB Exploit
+
+on:
+  workflow_dispatch:
+
+jobs:
+  exploit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pwntools
+
+      - name: Run exploit
+        run: python speedrun.py
