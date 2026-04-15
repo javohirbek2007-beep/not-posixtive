@@ -1,28 +1,65 @@
 #!/usr/bin/env python3
-from pwn import remote
+import socket
+import time
 
 HOST = "154.57.164.67"
 PORT = 30748
 
+def recv_until(sock, marker, timeout=10):
+    sock.settimeout(timeout)
+    data = b""
+    while marker not in data:
+        chunk = sock.recv(4096)
+        if not chunk:
+            break
+        data += chunk
+    return data
+
+def sendline(sock, s):
+    if isinstance(s, str):
+        s = s.encode()
+    sock.sendall(s + b"\n")
+    time.sleep(0.2)
+
 def main():
-    io = remote(HOST, PORT)
+    with socket.create_connection((HOST, PORT), timeout=10) as sock:
+        print(recv_until(sock, b"> ").decode(errors="ignore"))
 
-    io.sendlineafter(b"> ", b"1")
-    io.sendlineafter(b"(mode)> ", b"~0")
+        sendline(sock, "1")
+        print(recv_until(sock, b"(mode)> ").decode(errors="ignore"))
+        sendline(sock, "~0")
 
-    io.sendlineafter(b"> ", b"2")
-    io.sendlineafter(b"(bin)> ", b"grep")
+        print(recv_until(sock, b"> ").decode(errors="ignore"))
+        sendline(sock, "2")
+        print(recv_until(sock, b"(bin)> ").decode(errors="ignore"))
+        sendline(sock, "grep")
 
-    io.sendlineafter(b"> ", b"3")
-    io.sendlineafter(b"(arg1,arg2)> ", b"flag.txt,aaaa")
+        print(recv_until(sock, b"> ").decode(errors="ignore"))
+        sendline(sock, "3")
+        print(recv_until(sock, b"(arg1,arg2)> ").decode(errors="ignore"))
+        sendline(sock, "flag.txt,aaaa")
 
-    io.sendlineafter(b"> ", b"4")
-    io.sendlineafter(b"(switch1,switch2)> ", b"ZZZ,ZZZ")
+        print(recv_until(sock, b"> ").decode(errors="ignore"))
+        sendline(sock, "4")
+        print(recv_until(sock, b"(switch1,switch2)> ").decode(errors="ignore"))
+        sendline(sock, "ZZZ,ZZZ")
 
-    io.sendlineafter(b"> ", b"5")
+        print(recv_until(sock, b"> ").decode(errors="ignore"))
+        sendline(sock, "5")
 
-    data = io.recvall(timeout=10)
-    print(data.decode(errors="ignore"))
+        time.sleep(1)
+        out = b""
+        sock.settimeout(3)
+        try:
+            while True:
+                chunk = sock.recv(4096)
+                if not chunk:
+                    break
+                out += chunk
+        except Exception:
+            pass
+
+        print(out.decode(errors="ignore"))
 
 if __name__ == "__main__":
     main()
